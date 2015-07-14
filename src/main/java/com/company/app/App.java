@@ -21,7 +21,7 @@ public class App
         final List<Object> invalidValues = new ArrayList<Object>();
         final Map<K, V> result = new HashMap<K, V>();
 
-        for(Map.Entry<K, ?> entry : map.entrySet()) {
+        for(final Map.Entry<K, ?> entry : map.entrySet()) {
             if(coerce.isInstance(entry.getValue())) {
                 result.put(entry.getKey(), coerce.cast(entry.getValue()));
             } else {

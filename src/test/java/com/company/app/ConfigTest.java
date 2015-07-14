@@ -1,9 +1,11 @@
 package com.company.app;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
 import org.junit.Test;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +45,18 @@ public class ConfigTest {
         }
     }
 
+    @Test
+    public void testWithNotExistingMap() {
+        try {
+            getNonExistingMap();
+            assert(true);
+        } catch(ConfigException ex){
+            assert(true);
+        } catch(NonStringValueException ex) {
+            assert(false);
+        }
+    }
+
     private Map<String, String> getValidMap() throws NonStringValueException {
         final Config conf = ConfigFactory.load();
         final List<? extends ConfigObject> objects = conf.getObjectList(App.OAUTH_PARAM_MAP);
@@ -60,6 +74,12 @@ public class ConfigTest {
         final Config conf = ConfigFactory.load();
         final List<? extends ConfigObject> objects = conf.getObjectList("empty_map");
         return App.getMap(objects);
+    }
+
+    private Map<String, String> getNonExistingMap() throws NonStringValueException {
+        final Config conf = ConfigFactory.load();
+        final List<? extends ConfigObject> objects = conf.getObjectList("asdfasdfasdf");
+        throw new NotImplementedException();
     }
 
 }
