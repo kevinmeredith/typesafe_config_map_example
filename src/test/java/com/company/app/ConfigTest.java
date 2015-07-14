@@ -30,8 +30,7 @@ public class ConfigTest {
         try {
             getInvalidMap();
         } catch(NonStringValueException ex){
-            assert(ex.getMessage().equals("Invalid Values: must be `String` type: [1234123, true]"));
-            assert(true);
+            assert(ex.getMessage().equals("Invalid Values: must be `java.lang.String` type: [1234123, true]"));
         }
     }
 

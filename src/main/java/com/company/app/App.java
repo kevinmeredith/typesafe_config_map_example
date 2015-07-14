@@ -10,26 +10,27 @@ public class App
     public static final String OAUTH_PARAM_MAP = "oauthParams";
 
     /**
-     * Given a List of Map<K, Object> return a Map<K, String>.
-     * @param map Map<K, Object>
-     * @return Map<K, String>
-     * @throws NonStringValueException if at least one of the input map's values is not a String.
+     * NonStringValueException if at least one of the input map's values is not a String.
+     * @param coerce Value to attempt to cast the unbounded wildcard, i.e. map's value.
+     * @param map Map<K, V>
+     * @return Map<K, V>
+     * @throws NonStringValueException
      */
-    private static <K> Map<K, String> validate(final Map<K, Object> map) throws NonStringValueException {
+    private static <K, V> Map<K, V> validate(Class<V> coerce, final Map<K, ?> map)
+            throws NonStringValueException {
         final List<Object> invalidValues = new ArrayList<Object>();
-        final Map<K, String> result = new HashMap<K, String>();
+        final Map<K, V> result = new HashMap<K, V>();
 
-        for(Map.Entry<K, Object> entry : map.entrySet()) {
-            if(!(entry.getValue() instanceof String)) {
+        for(Map.Entry<K, ?> entry : map.entrySet()) {
+            if(coerce.isInstance(entry.getValue())) {
+                result.put(entry.getKey(), coerce.cast(entry.getValue()));
+            } else {
                 invalidValues.add(entry.getValue());
-            }
-            else {
-                result.put(entry.getKey(), (String) entry.getValue());
             }
         }
 
         if(!invalidValues.isEmpty()) {
-            throw new NonStringValueException("Invalid Values: must be `String` type: " + invalidValues);
+            throw new NonStringValueException("Invalid Values: must be `" + coerce.getName() +  "` type: " + invalidValues);
         }
 
         return result;
@@ -49,7 +50,7 @@ public class App
             map.putAll(res);
         }
 
-        return validate(map);
+        return validate(String.class, map);
     }
 
     private static <K, V> Optional<V> find(final Map<K, V> map, final K key) {
